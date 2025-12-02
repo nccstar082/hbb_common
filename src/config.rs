@@ -2604,8 +2604,6 @@ pub mod keys {
     pub const OPTION_FLUTTER_PEER_CARD_UI_TYLE: &str = "peer-card-ui-type";
     pub const OPTION_FLUTTER_CURRENT_AB_NAME: &str = "current-ab-name";
     pub const OPTION_ALLOW_REMOTE_CM_MODIFICATION: &str = "allow-remote-cm-modification";
-    pub const OPTION_API_DEFAULT_USERNAME: &str = "api-default-username";
-    pub const OPTION_API_DEFAULT_PASSWORD: &str = "api-default-password";
 
     pub const OPTION_PRINTER_INCOMING_JOB_ACTION: &str = "printer-incomming-job-action";
     pub const OPTION_PRINTER_ALLOW_AUTO_PRINT: &str = "allow-printer-auto-print";
