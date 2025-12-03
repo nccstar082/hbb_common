@@ -1600,8 +1600,6 @@ impl PeerConfig {
             keys::OPTION_I444,
             keys::OPTION_SWAP_LEFT_RIGHT_MOUSE,
             keys::OPTION_COLLAPSE_TOOLBAR,
-            keys::OPTION_API_DEFAULT_USERNAME,
-            keys::OPTION_API_DEFAULT_PASSWORD,
         ]
         .map(|key| {
             mp.insert(key.to_owned(), UserDefaultConfig::read(key));
@@ -1992,8 +1990,6 @@ impl UserDefaultConfig {
             keys::OPTION_ENABLE_FILE_COPY_PASTE => self.get_string(key, "Y", vec!["", "N"]),
             keys::OPTION_EDGE_SCROLL_EDGE_THICKNESS => self.get_num_string(key, 100, 20, 150),
             keys::OPTION_TRACKPAD_SPEED => self.get_num_string(key, 100, 10, 1000),
-            keys::OPTION_API_DEFAULT_USERNAME => self.get_string(key, "yxdz", vec![]),
-            keys::OPTION_API_DEFAULT_PASSWORD => self.get_string(key, "yxdz", vec![]),
             _ => self
                 .get_after(key)
                 .map(|v| v.to_string())
@@ -2598,8 +2594,6 @@ pub mod keys {
     pub const OPTION_FLUTTER_PEER_SORTING: &str = "peer-sorting";
     pub const OPTION_FLUTTER_PEER_TAB_INDEX: &str = "peer-tab-index";
     pub const OPTION_FLUTTER_PEER_TAB_ORDER: &str = "peer-tab-order";
-    pub const OPTION_API_DEFAULT_USERNAME: &str = "api-default-username";
-    pub const OPTION_API_DEFAULT_PASSWORD: &str = "api-default-password";
     pub const OPTION_FLUTTER_PEER_TAB_VISIBLE: &str = "peer-tab-visible";
     pub const OPTION_FLUTTER_PEER_CARD_UI_TYLE: &str = "peer-card-ui-type";
     pub const OPTION_FLUTTER_CURRENT_AB_NAME: &str = "current-ab-name";
