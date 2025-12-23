@@ -234,11 +234,11 @@ pub fn gen_version() {
         for line in read_lines("Cargo.toml").unwrap().flatten() {
             let ab: Vec<&str> = line.split('=').map(|x| x.trim()).collect();
             if ab.len() == 2 && ab[0] == "version" {
-                version_from_cargo = ab[1];
+                version_from_cargo = ab[1].to_owned();
                 break;
             }
         }
-        version_from_cargo.to_owned()
+        version_from_cargo
     };
     
     file.write_all(format!("pub const VERSION: &str = {};\n", version).as_bytes())
