@@ -230,15 +230,17 @@ pub fn gen_version() {
         format!("\"{}\"", v)
     } else {
         // 否则从Cargo.toml中读取版本号
-        let mut version_from_cargo = "\"unknown\"";
+        let mut version_from_cargo = "unknown".to_owned();
         for line in read_lines("Cargo.toml").unwrap().flatten() {
             let ab: Vec<&str> = line.split('=').map(|x| x.trim()).collect();
             if ab.len() == 2 && ab[0] == "version" {
-                version_from_cargo = ab[1].to_owned();
+                // 移除引号并转换为拥有所有权的字符串
+                version_from_cargo = ab[1].trim_matches('"').to_owned();
                 break;
             }
         }
-        version_from_cargo
+        // 格式化为包含引号的字符串，以便写入到version.rs中
+        format!("\"{}\"", version_from_cargo)
     };
     
     file.write_all(format!("pub const VERSION: &str = {};\n", version).as_bytes())
