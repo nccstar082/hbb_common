@@ -225,27 +225,22 @@ pub fn gen_version() {
     use std::io::prelude::*;
     let mut file = File::create("./src/version.rs").unwrap();
     
-    // 首先检查环境变量RUSTDESK_VERSION，如果存在则使用它作为版本号
-    let version = if let Ok(v) = std::env::var("RUSTDESK_VERSION") {
-        format!("\"{}\"", v)
+    // Check if RUSTDESK_VERSION environment variable is set
+    if let Ok(version_from_env) = std::env::var("RUSTDESK_VERSION") {
+        // Use version from environment variable if it exists
+        file.write_all(format!("pub const VERSION: &str = \"{}\";\n", version_from_env).as_bytes())
+            .ok();
     } else {
-        // 否则从Cargo.toml中读取版本号
-        let mut version_from_cargo = "unknown".to_owned();
+        // Otherwise read from Cargo.toml
         for line in read_lines("Cargo.toml").unwrap().flatten() {
             let ab: Vec<&str> = line.split('=').map(|x| x.trim()).collect();
             if ab.len() == 2 && ab[0] == "version" {
-                // 移除引号并转换为拥有所有权的字符串
-                version_from_cargo = ab[1].trim_matches('"').to_owned();
+                file.write_all(format!("pub const VERSION: &str = {};\n", ab[1]).as_bytes())
+                    .ok();
                 break;
             }
         }
-        // 格式化为包含引号的字符串，以便写入到version.rs中
-        format!("\"{}\"", version_from_cargo)
-    };
-    
-    file.write_all(format!("pub const VERSION: &str = {};\n", version).as_bytes())
-        .ok();
-    
+    }
     // generate build date
     let build_date = format!("{}", chrono::Local::now().format("%Y-%m-%d %H:%M"));
     file.write_all(
