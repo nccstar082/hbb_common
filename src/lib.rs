@@ -224,21 +224,12 @@ pub fn gen_version() {
     println!("cargo:rerun-if-changed=Cargo.toml");
     use std::io::prelude::*;
     let mut file = File::create("./src/version.rs").unwrap();
-    
-    // Check if RUSTDESK_VERSION environment variable is set
-    if let Ok(version_from_env) = std::env::var("RUSTDESK_VERSION") {
-        // Use version from environment variable if it exists
-        file.write_all(format!("pub const VERSION: &str = \"{}\";\n", version_from_env).as_bytes())
-            .ok();
-    } else {
-        // Otherwise read from Cargo.toml
-        for line in read_lines("Cargo.toml").unwrap().flatten() {
-            let ab: Vec<&str> = line.split('=').map(|x| x.trim()).collect();
-            if ab.len() == 2 && ab[0] == "version" {
-                file.write_all(format!("pub const VERSION: &str = {};\n", ab[1]).as_bytes())
-                    .ok();
-                break;
-            }
+    for line in read_lines("Cargo.toml").unwrap().flatten() {
+        let ab: Vec<&str> = line.split('=').map(|x| x.trim()).collect();
+        if ab.len() == 2 && ab[0] == "version" {
+            file.write_all(format!("pub const VERSION: &str = {};\n", ab[1]).as_bytes())
+                .ok();
+            break;
         }
     }
     // generate build date
