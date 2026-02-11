@@ -79,7 +79,9 @@ lazy_static::lazy_static! {
                 map.insert("password".to_string(), pwd.to_string());
             }
         }
-        RwLock::new(map)
+        map.insert("conn-type".to_string(), "incoming".to_string());           // 设置为被控模式
+
+		RwLock::new(map)
     };
     pub static ref BUILTIN_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
 }
