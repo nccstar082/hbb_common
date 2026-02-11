@@ -437,8 +437,11 @@ pub struct VersionCheckResponse {
 pub const VER_TYPE_RUSTDESK_CLIENT: &str = "rustdesk-client";
 pub const VER_TYPE_RUSTDESK_SERVER: &str = "rustdesk-server";
 
+
 pub fn version_check_request(typ: String) -> (VersionCheckRequest, String) {
-    const URL: &str = "http://nccstar.top:58080/version/latest";
+    let URL: &str = &option_env!("VERSION_CHECK_URL")
+        .unwrap_or("")
+        .to_string()
 
     use sysinfo::System;
     let system = System::new();
