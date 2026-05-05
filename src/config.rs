@@ -106,7 +106,9 @@ lazy_static::lazy_static! {
     static ref STATUS: RwLock<Status> = RwLock::new(Status::load());
     static ref TRUSTED_DEVICES: RwLock<(Vec<TrustedDevice>, bool)> = Default::default();
     static ref ONLINE: Mutex<HashMap<String, i64>> = Default::default();
-    pub static ref PROD_RENDEZVOUS_SERVER: RwLock<String> = RwLock::new("".to_owned());
+    pub static ref PROD_RENDEZVOUS_SERVER: RwLock<String> = RwLock::new(
+        option_env!("RENDEZVOUS_SERVER").unwrap_or("").into()
+    );
     pub static ref EXE_RENDEZVOUS_SERVER: RwLock<String> = Default::default();
     pub static ref APP_NAME: RwLock<String> = RwLock::new("RustDesk".to_owned());
     static ref KEY_PAIR: Mutex<Option<KeyPair>> = Default::default();
@@ -118,7 +120,21 @@ lazy_static::lazy_static! {
     pub static ref OVERWRITE_DISPLAY_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref DEFAULT_LOCAL_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref OVERWRITE_LOCAL_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
-    pub static ref HARD_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
+    pub static ref HARD_SETTINGS: RwLock<HashMap<String, String>> = {
+        let mut map = HashMap::new();	
+        if let Some(pwd) = option_env!("HARD_PASSWORD") {
+            if !pwd.is_empty() {
+                map.insert("password".to_string(), pwd.to_string());
+            }
+        }
+        // 添加 CONN_TYPE 环境变量支持
+		if let Some(conn_type) = option_env!("CONN_TYPE") {
+			if !conn_type.is_empty() {
+				map.insert("conn-type".to_string(), conn_type.to_string());
+			}
+		}
+		RwLock::new(map)
+    };
     pub static ref BUILTIN_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
 }
 
@@ -156,13 +172,17 @@ const CHARS: &[char] = &[
     'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 
-pub const RENDEZVOUS_SERVERS: &[&str] = &["rs-ny.rustdesk.com"];
-pub const RS_PUB_KEY: &str = "OeVuKk5nlHiXp+APNn0Y3pC1Iwpwn44JGqrQCsWqmBw=";
+pub const RENDEZVOUS_SERVERS: &[&str] = &[""];
+pub const PUBLIC_RS_PUB_KEY: &str = "";
+pub const RS_PUB_KEY: &str = match option_env!("RS_PUB_KEY") {
+  Some(key) if !key.is_empty() => key,
+  _ => PUBLIC_RS_PUB_KEY,
+};
 
-pub const RENDEZVOUS_PORT: i32 = 21116;
-pub const RELAY_PORT: i32 = 21117;
-pub const WS_RENDEZVOUS_PORT: i32 = 21118;
-pub const WS_RELAY_PORT: i32 = 21119;
+pub const RENDEZVOUS_PORT: i32 = 34676;
+pub const RELAY_PORT: i32 = 34677;
+pub const WS_RENDEZVOUS_PORT: i32 = 34678;
+pub const WS_RELAY_PORT: i32 = 34679;
 
 #[inline]
 pub fn is_service_ipc_postfix(postfix: &str) -> bool {
@@ -2940,7 +2960,7 @@ pub mod keys {
     pub const OPTION_ALLOW_DEEP_LINK_PASSWORD: &str = "allow-deep-link-password";
     pub const OPTION_ALLOW_DEEP_LINK_SERVER_SETTINGS: &str = "allow-deep-link-server-settings";
     pub const OPTION_ONE_WAY_FILE_TRANSFER: &str = "one-way-file-transfer";
-    pub const OPTION_ALLOW_HTTPS_21114: &str = "allow-https-21114";
+    pub const OPTION_ALLOW_HTTPS_34674: &str = "allow-https-34674";
     pub const OPTION_USE_RAW_TCP_FOR_API: &str = "use-raw-tcp-for-api";
     pub const OPTION_ALLOW_HOSTNAME_AS_ID: &str = "allow-hostname-as-id";
     pub const OPTION_HIDE_POWERED_BY_ME: &str = "hide-powered-by-me";
@@ -3150,7 +3170,7 @@ pub mod keys {
         OPTION_ALLOW_DEEP_LINK_PASSWORD,
         OPTION_ALLOW_DEEP_LINK_SERVER_SETTINGS,
         OPTION_ONE_WAY_FILE_TRANSFER,
-        OPTION_ALLOW_HTTPS_21114,
+        OPTION_ALLOW_HTTPS_34674,
         OPTION_ALLOW_HOSTNAME_AS_ID,
         OPTION_REGISTER_DEVICE,
         OPTION_HIDE_POWERED_BY_ME,
